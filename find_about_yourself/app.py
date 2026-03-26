@@ -9,9 +9,11 @@ from pathlib import Path
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 
-# App owner (fixed data served by /api/owner)
-APP_OWNER_NAME = "Darth Vader"
-APP_OWNER_RESIDENCE = "Hollywood"
+# App owners (fixed data served by /api/owner)
+APP_OWNERS = [
+    {"name": "Darth Vader", "residence": "Hollywood"},
+    {"name": "Yoda", "residence": "Bollywood"},
+]
 
 BASE_DIR = Path(__file__).resolve().parent
 DATABASE = os.environ.get("FIND_ABOUT_DB", str(BASE_DIR / "profiles.sqlite"))
@@ -96,12 +98,7 @@ def save():
 
 @app.route("/api/owner", methods=["GET"])
 def api_owner():
-    return jsonify(
-        {
-            "name": APP_OWNER_NAME,
-            "residence": APP_OWNER_RESIDENCE,
-        }
-    )
+    return jsonify({"owners": APP_OWNERS})
 
 
 @app.route("/search", methods=["GET"])

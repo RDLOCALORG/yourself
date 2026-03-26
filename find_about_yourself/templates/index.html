@@ -91,19 +91,14 @@
 
     <hr>
 
-    <h3>About the app owner</h3>
+    <h3>About the app owners</h3>
     <p class="text-muted">Details are loaded from the server when you ask.</p>
     <div class="form-group">
-      <button type="button" class="btn btn-primary" id="fetch-owner-btn">Show app owner</button>
+      <button type="button" class="btn btn-primary" id="fetch-owner-btn">Show app owners</button>
       <span id="owner-loading" class="text-muted" style="display: none; margin-left: 0.5em;">Loading…</span>
     </div>
     <div id="owner-result" class="well" style="display: none; margin-top: 1em;">
-      <dl class="dl-horizontal" style="margin-bottom: 0;">
-        <dt>Name</dt>
-        <dd id="owner-name"></dd>
-        <dt>Residing in</dt>
-        <dd id="owner-residence"></dd>
-      </dl>
+      <div id="owner-entries"></div>
     </div>
     <p id="owner-error" class="text-danger" style="display: none;"></p>
   </div>
@@ -114,8 +109,7 @@
       var loading = document.getElementById("owner-loading");
       var result = document.getElementById("owner-result");
       var err = document.getElementById("owner-error");
-      var nameEl = document.getElementById("owner-name");
-      var resEl = document.getElementById("owner-residence");
+      var entriesEl = document.getElementById("owner-entries");
 
       btn.addEventListener("click", function () {
         err.style.display = "none";
@@ -129,8 +123,26 @@
             return r.json();
           })
           .then(function (data) {
-            nameEl.textContent = data.name;
-            resEl.textContent = data.residence;
+            var owners = data.owners || [];
+            entriesEl.innerHTML = "";
+            owners.forEach(function (o) {
+              var dl = document.createElement("dl");
+              dl.className = "dl-horizontal";
+              dl.style.marginBottom = "1em";
+              var dt1 = document.createElement("dt");
+              dt1.textContent = "Name";
+              var dd1 = document.createElement("dd");
+              dd1.textContent = o.name;
+              var dt2 = document.createElement("dt");
+              dt2.textContent = "Residing in";
+              var dd2 = document.createElement("dd");
+              dd2.textContent = o.residence;
+              dl.appendChild(dt1);
+              dl.appendChild(dd1);
+              dl.appendChild(dt2);
+              dl.appendChild(dd2);
+              entriesEl.appendChild(dl);
+            });
             result.style.display = "block";
           })
           .catch(function () {
