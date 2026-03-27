@@ -33,22 +33,30 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 age INTEGER NOT NULL,
-                address TEXT NOT NULL
+                address TEXT NOT NULL,
+                hobby TEXT NOT NULL DEFAULT ''
             )
             """
         )
+        try:
+            conn.execute("ALTER TABLE self_profiles ADD COLUMN hobby TEXT NOT NULL DEFAULT ''")
+        except sqlite3.OperationalError:
+            pass
         conn.execute("CREATE INDEX IF NOT EXISTS idx_self_profiles_name ON self_profiles (name)")
         conn.commit()
 
 
-def validate_profile(name: str, age_raw: str, address: str):
+def validate_profile(name: str, age_raw: str, address: str, hobby: str):
     errors = []
     name = (name or "").strip()
     address = (address or "").strip()
+    hobby = (hobby or "").strip()
     if not name:
         errors.append("Name is required.")
     if not address:
         errors.append("Address is required.")
+    if not hobby:
+        errors.append("Hobby is required.")
     age = None
     if not (age_raw or "").strip():
         errors.append("Age is required.")
@@ -59,7 +67,7 @@ def validate_profile(name: str, age_raw: str, address: str):
                 errors.append("Age must be between 0 and 150.")
         except ValueError:
             errors.append("Age must be a whole number.")
-    return errors, name, age, address
+    return errors, name, age, address, hobby
 
 
 app = Flask(__name__)
@@ -76,7 +84,8 @@ def save():
     name = request.form.get("name", "")
     age_raw = request.form.get("age", "")
     address = request.form.get("address", "")
-    errors, name, age, address = validate_profile(name, age_raw, address)
+    hobby = request.form.get("hobby", "")
+    errors, name, age, address, hobby = validate_profile(name, age_raw, address, hobby)
     if errors:
         for e in errors:
             flash(e, "error")
@@ -85,11 +94,12 @@ def save():
             form_name=name,
             form_age=age_raw,
             form_address=address,
+            form_hobby=hobby,
         )
     with closing(get_connection()) as conn:
         conn.execute(
-            "INSERT INTO self_profiles (name, age, address) VALUES (?, ?, ?)",
-            (name, age, address),
+            "INSERT INTO self_profiles (name, age, address, hobby) VALUES (?, ?, ?, ?)",
+            (name, age, address, hobby),
         )
         conn.commit()
     flash("Saved your details.", "success")
@@ -114,7 +124,7 @@ def search():
     with closing(get_connection()) as conn:
         row = conn.execute(
             """
-            SELECT name, age, address FROM self_profiles
+            SELECT name, age, address, hobby FROM self_profiles
             WHERE lower(name) = lower(?)
             ORDER BY id ASC
             LIMIT 1
