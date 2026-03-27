@@ -1,6 +1,22 @@
 # Git workflow: clone → feature branch → test → commit → PR → merge
 
-End-to-end steps for working on GitHub with a feature branch and merging back into `main`. Organization **`RDLOCALORG`**, repository **`yourself`**. Branch names below are examples—pick your own. This repo uses **`main`** as the default branch.
+End-to-end steps for this repository. Defaults used below:
+
+| Item | Value |
+|------|--------|
+| **Organization** | **RDLOCALORG** |
+| **Repository** | **yourself** |
+| **Default branch** | **main** |
+| **Remote** | **origin** → `https://github.com/RDLOCALORG/yourself.git` |
+
+**Example branches used in this project** (names are descriptive—create your own for new work):
+
+| Branch | Typical use |
+|--------|-------------|
+| **`feature/yourself`** | Broader feature work (e.g. owners API, workflow doc) |
+| **`feature/add-baby-yoda-logo`** | Focused change (e.g. Flask header logo + doc tweaks) |
+
+GitHub may show a redirect if the repo was moved under the org; use **`git remote set-url origin https://github.com/RDLOCALORG/yourself.git`** so `origin` matches.
 
 ---
 
@@ -11,147 +27,139 @@ git clone https://github.com/RDLOCALORG/yourself.git
 cd yourself
 ```
 
-Use SSH if you prefer: `git clone git@github.com:RDLOCALORG/yourself.git`
+SSH: `git clone git@github.com:RDLOCALORG/yourself.git`
 
 Org repo list: [github.com/orgs/RDLOCALORG/repositories](https://github.com/orgs/RDLOCALORG/repositories)
 
 ---
 
-## 2. Update the default branch before you branch
-
-So your feature branch starts from the latest `main`:
+## 2. Update `main` before you branch
 
 ```bash
 git fetch origin
 git checkout main
 git pull origin main
 ```
-
-If your default branch is not `main`, replace it (for example `master`).
 
 ---
 
 ## 3. Create and switch to a feature branch
 
-Pick a short, descriptive name (examples: `feature/add-owner`, `fix/login-validation`):
-
 ```bash
-git checkout -b your-branch-name
+git checkout -b feature/add-baby-yoda-logo
 ```
+
+Use any clear name, e.g. `feature/yourself`, `fix/login-validation`.
 
 ---
 
 ## 4. Work on your changes
 
-Edit files in your editor. Use `git status` often to see what changed.
+Edit files. Use `git status` to see what changed.
 
 ---
 
 ## 5. Test your changes locally
 
-Run whatever your project uses **before** you commit. Examples:
+- **Automated tests:** e.g. `./mvnw test` (needs a **JDK** on your machine)
+- **Flask app:** `cd find_about_yourself && python3 -m pip install -r requirements.txt && python3 app.py` → open [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
-- **Automated tests:** e.g. `./mvnw test`, `pytest`, `npm test`
-- **Run the app:** e.g. `./mvnw spring-boot:run`, `python app.py`, `npm start`
-
-**This repository** has two parts:
-
-- **Java (Spring PetClinic)** at the repo root: needs a JDK installed, then `./mvnw test` or `./mvnw spring-boot:run`
-- **Python (Flask)** under `find_about_yourself/`: `cd find_about_yourself && python3 -m pip install -r requirements.txt && python3 app.py`
-
-Fix failures locally before you push.
+Fix failures before you push.
 
 ---
 
 ## 6. Commit your changes
 
+Nothing is committed until you **stage** (`git add`) then **commit**:
+
 ```bash
 git status
-git diff                    # optional: review changes
-git add -p                  # or: git add <files>  or  git add -A
-git commit -m "Short description of what you changed"
+git diff
+git add docs/github-branch-workflow.md find_about_yourself/templates/index.html
+# or: git add -A   (watch for unwanted files, e.g. accidental nested clones)
+git commit -m "Add baby Yoda logo and update workflow doc"
 ```
 
-Repeat the edit → test → commit cycle as needed.
+If `git commit` says **nothing to commit**, you likely skipped `git add` or there are no file changes.
 
 ---
 
 ## 7. Push the feature branch to GitHub
 
-First push of the branch:
+First time pushing **`feature/add-baby-yoda-logo`**:
 
 ```bash
-git push -u origin your-branch-name
+git push -u origin feature/add-baby-yoda-logo
 ```
 
-Later pushes on the same branch:
+After that, on the same branch:
 
 ```bash
 git push
 ```
 
-`-u` sets the upstream so `git push` / `git pull` know which remote branch to use.
+**If push fails with `GH007` / private email:** adjust [GitHub → Settings → Emails](https://github.com/settings/emails) (allow command-line pushes or use your `@users.noreply.github.com` address in `git config user.email`), then amend or push again.
 
 ---
 
 ## 8. Create a pull request (PR)
 
-1. Open the repo on GitHub: [github.com/RDLOCALORG/yourself](https://github.com/RDLOCALORG/yourself)
-2. GitHub often shows a banner **“Compare & pull request”** after a recent push—use that, **or**
-3. Go to **Pull requests** → **New pull request**
-4. Set **base:** `main` (or your default branch) ← **compare:** `your-branch-name`
-5. Add a title and description, then **Create pull request**
+**Base:** `main` ← **Compare:** your branch (e.g. **`feature/add-baby-yoda-logo`**).
 
-Direct compare link (replace `your-branch-name` with your branch):
+### In the browser
 
-`https://github.com/RDLOCALORG/yourself/compare/main...your-branch-name`
+1. Repo: [github.com/RDLOCALORG/yourself](https://github.com/RDLOCALORG/yourself)
+2. **Pull requests** → **New pull request**, or use the banner after a push.
+3. Confirm **base:** `main`, **compare:** `feature/add-baby-yoda-logo` → **Create pull request**
+
+**Direct compare link:**
+
+`https://github.com/RDLOCALORG/yourself/compare/main...feature/add-baby-yoda-logo`
+
+(Replace the branch name at the end if yours differs.)
+
+### In GitHub Desktop
+
+1. **Current repository:** `yourself`
+2. **Current branch:** e.g. **`feature/add-baby-yoda-logo`** (not `main`)
+3. **Push origin** if you have unpushed commits
+4. Menu **Branch** → **Create pull request** (opens the browser), *or* open the **Pull Requests** tab in the branch dropdown
+5. If the branch list is empty: **clear the filter box**, click **Fetch origin**, search the **full** branch name (partial text like `feature/add` may hide matches)
 
 ---
 
 ## 9. Merge the PR into `main`
 
-On the PR page, when reviews and checks (if any) are satisfied:
-
-1. Click **Merge pull request** (or your team’s merge option: squash merge, rebase merge)
-2. Confirm the merge
-
-The `main` branch on GitHub now includes your work.
+On the PR page: **Merge pull request** → confirm (or use squash/rebase if your team prefers).
 
 ---
 
-## 10. Update your local `main` after the merge
+## 10. Update local `main` after the merge
 
 ```bash
 git checkout main
 git pull origin main
 ```
 
-You can delete the feature branch locally if you are done:
+Optional cleanup:
 
 ```bash
-git branch -d your-branch-name
-```
-
-(Optional) Delete the remote branch on GitHub from the PR page after merge, or:
-
-```bash
-git push origin --delete your-branch-name
+git branch -d feature/add-baby-yoda-logo
+git push origin --delete feature/add-baby-yoda-logo
 ```
 
 ---
 
-## Shortcut: create a branch from remote `main` without updating local `main` first
+## Shortcut: branch from remote `main` without updating local `main` first
 
 ```bash
 git fetch origin
-git checkout -b your-branch-name origin/main
+git checkout -b feature/add-baby-yoda-logo origin/main
 ```
 
 ---
 
 ## Uncommitted work when switching branches
 
-If Git refuses to switch branches because of local changes:
-
-- **Stash:** `git stash -u`, switch branch, then `git stash pop`
-- **Or** commit the work on the current branch first
+- **Stash:** `git stash -u`, switch branch, `git stash pop`
+- **Or** commit on the current branch first
