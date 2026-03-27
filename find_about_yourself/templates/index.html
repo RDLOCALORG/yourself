@@ -7,12 +7,32 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { padding-top: 20px; padding-bottom: 40px; }
+    .app-logo-wrap { margin-bottom: 1.25em; }
+    .app-logo { display: inline-block; text-decoration: none; }
+    .app-logo svg { display: block; width: 120px; height: auto; max-width: 100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,.12)); }
     h2 { margin-bottom: 1em; }
     hr { margin: 2em 0; }
   </style>
 </head>
 <body>
   <div class="container">
+    <div class="app-logo-wrap text-center">
+      <a href="{{ url_for('index') }}" class="app-logo" aria-label="Home" title="The Child">
+        <!-- Minimal “green alien” mascot (original SVG, Grogu-inspired) -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 130" role="img" aria-hidden="true">
+          <path d="M12 58 C8 35 28 22 42 40 C38 52 32 68 24 78 C18 72 14 66 12 58Z" fill="#689f38"/>
+          <path d="M148 58 C152 35 132 22 118 40 C122 52 128 68 136 78 C142 72 146 66 148 58Z" fill="#689f38"/>
+          <ellipse cx="80" cy="72" rx="48" ry="44" fill="#7cb342"/>
+          <ellipse cx="56" cy="68" rx="18" ry="22" fill="#1a1a1a"/>
+          <ellipse cx="104" cy="68" rx="18" ry="22" fill="#1a1a1a"/>
+          <ellipse cx="58" cy="64" rx="7" ry="8" fill="#fafafa"/>
+          <ellipse cx="106" cy="64" rx="7" ry="8" fill="#fafafa"/>
+          <ellipse cx="60" cy="70" rx="3" ry="4" fill="#263238"/>
+          <ellipse cx="108" cy="70" rx="3" ry="4" fill="#263238"/>
+          <path d="M68 98 Q80 108 92 98" fill="none" stroke="#33691e" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
     <h2>Find out about yourself</h2>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
